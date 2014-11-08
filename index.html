@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html manifest="" lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8">
+    <title>app</title>
+    <style type="text/css">
+      html, body { background: #161616; color: #2187e7; height: 100%; }
+      #app-viewport { width: 100%; height: 100%; }
+      .ease { -webkit-transition: all 1s ease-in-out; -moz-transition: all 1s ease-in-out; transition: all 1s ease-in-out; }
+      #app-viewport section { z-index: 100; position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: -webkit-box; display: box; -webkit-box-orient: vertical; box-orient: vertical; opacity: 1; }
+      section#loading-frame { -webkit-box-align: center; box-align: center; -webkit-box-pack: center; box-pack: center; -webkit-transition: all .5s ease-in-out; -moz-transition: all .5s ease-in-out; transition: all .5s ease-in-out; }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="css/loading.css" type="text/css">
+    <link href="favicon.ico" rel="shortcut icon">
+    <link href="favicon.gif" rel="icon" type="image/gif">
+  </head>
+  <body id="app">
+    <div id="app-viewport">
+      <section id="loading-frame" class=""><div id="app-loading"><div id="outside"></div><div id="inside"></div></div></section>
+    </div>
+  </body>
+  <script type="text/javascript">
+    var CADRE = CADRE || {
+      version: '1.0.0'
+      , LOADING: 'loading-frame'
+      /* ------------------------------------------------- */
+      , TPL : {
+        'css': '<link rel="stylesheet" href="{{path}}" type="text/css">'
+        , 'js': '<script src="{{path}}" type="text/javascript"><\/'+'script>'
+        , 'meta': '<meta name="{{name}}" content="{{content}}">'
+        , 'link': '<link href="{{path}}" rel="{{rel}}" sizes="{{sizes}}">'   
+      }
+      , LOADING_FRAME: null , TPL_FRAME: {}
+      , replace_tpl: function(tpl, repl, func){
+        if ( undefined == func ){
+          func = function(s, key){ return repl[key] || s; }
+        }
+        return tpl.replace(/\{\{(.*?)\}\}/g, function(s, key){ return func(s, key); });
+      }
+      , iterate_load: function(obj, tpl, debug) {
+        var i, length;
+        for ( i = 0, length = obj.length; i < length; i++ ) {
+          var repl = obj[i], tpl_replaced = this.replace_tpl(tpl, repl);
+          if(true === debug){
+            console.log(tpl_replaced);
+          } else if ( tpl.match(/script/) ) {
+            var scrpt = document.createElement('script'); scrpt.src = repl["path"];
+            document.body.appendChild(scrpt);
+          } else {
+            document.head.innerHTML += tpl_replaced;
+          }
+        }
+      }
+      , load: function(app){
+          this.LOADING_FRAME = document.getElementById(this.LOADING.replace('#',''));
+          setTimeout(function(){
+            CADRE.iterate_load(app.css || [], CADRE.TPL['css']);
+            CADRE.iterate_load(app.js || [], CADRE.TPL['js']);
+            CADRE.iterate_load(app.meta || [], CADRE.TPL['meta']);
+            CADRE.iterate_load(app.link || [], CADRE.TPL['link']);
+          }, 2000);
+        }
+      , loading_frame: function(toggle){
+        if( toggle == 'hide' ){
+          this.LOADING_FRAME.className = (this.LOADING_FRAME.className != '') ? this.LOADING_FRAME.className + ' hide' : 'hide';
+        } else {
+          this.LOADING_FRAME.className = this.LOADING_FRAME.className.replace('hide','');
+        }
+      }
+    };;
+    /* */
+    CADRE.load({
+      'id': 'app-id'
+      , 'css': [
+        { 
+          'path': 'http://fonts.googleapis.com/css?family=Roboto+Condensed:400,700' 
+        }
+        , {
+          'path': 'css/style.css?4'
+        }
+      ]
+      , 'js': [
+        { 
+          'path': 'http://code.jquery.com/jquery-1.9.1.min.js'
+        }
+        , { 
+          'path': 'js/app.js?4'
+        }
+      ]
+      , 'meta': [
+        { 
+          'name': 'apple-mobile-web-app-capable'
+          , 'content': 'yes' 
+          }
+        , { 
+          'name': 'apple-touch-fullscreen'
+          , 'content': 'yes' 
+        }
+      ]
+      , 'link': [
+        { 
+          'path': 'apple-touch-icon-57x57.png'
+          , 'rel': 'apple-touch-icon'
+          , 'sizes': null
+        }
+        , { 
+          'path': 'apple-touch-icon-72x72.png'
+          , 'rel': 'apple-touch-icon'
+          , 'sizes': '72x72'
+        }
+        , { 
+          'path': 'apple-touch-icon-114x114.png'
+          , 'rel': 'apple-touch-icon'
+          , 'sizes': '114x114'
+        }
+        , { 
+          'path': 'apple-touch-icon-144x144.png'
+          , 'rel': 'apple-touch-icon'
+          , 'sizes': '144x144'
+        }
+        , { 
+          'path': 'apple-touch-icon-1024x1024.png'
+          , 'rel': 'apple-touch-icon'
+          , 'sizes': '1024x1024'
+        }
+      ]
+    });;
+    /* */
+  </script>
+</html>
